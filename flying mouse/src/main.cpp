@@ -1,59 +1,33 @@
-#include <Wire.h>
-#include <MPU9250.h>
-#include <WiFi.h>
+/*
+  Blink
 
-MPU9250 IMU(Wire, 0x68); // Create an MPU9250 object
+  Flashes a LED every second, repeatedly.
 
-// WiFi credentials
-const char* ssid = "YOUR_WIFI_SSID";
-const char* password = "YOUR_WIFI_PASSWORD";
+  The ESP32-C3 SuperMini has an on-board LED you can control. 
+  It is attached to digital pin 8. 
+  LED_BUILTIN is set to the correct LED pin.
 
-// Server details
-WiFiServer server(80); // Create a TCP server on port 80
+  This example code is in the public domain.
 
+  Adapted from:
+  https://www.arduino.cc/en/Tutorial/BuiltInExamples/Blink
+*/
+
+// the LED is at pin  GPIO8
+#include "Arduino.h"
+#define LED_BUILTIN 8
+
+// the setup function runs once when you press reset or power the board
 void setup() {
-  Serial.begin(115200);
-  Wire.begin();
-
-  // Initialize MPU9250
-  if (IMU.begin() < 0) {
-    Serial.println("IMU initialization failed");
-    while (1);
-  }
-
-  // Connect to WiFi
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("\nWiFi connected");
-  Serial.println(WiFi.localIP());
-
-  // Start the server
-  server.begin();
+  // initialize digital pin LED_BUILTIN as an output.
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
+// the loop function runs over and over again forever
 void loop() {
-  WiFiClient client = server.available(); // Check for client connections
-
-  if (client) {
-    Serial.println("New client connected");
-    while (client.connected()) {
-      IMU.readSensor(); // Read sensor data
-
-      // Get accelerometer data
-      float ax = IMU.getAccelX_mss();
-      float ay = IMU.getAccelY_mss();
-
-      // Send data to the client
-      client.print(ax);
-      client.print(",");
-      client.println(ay);
-
-      delay(20); // Adjust delay for smoother data transmission
-    }
-    client.stop();
-    Serial.println("Client disconnected");
-  }
+  digitalWrite(LED_BUILTIN, LOW);  // turn the LED on (LOW is the voltage level)
+  delay(50);                      // wait 50 ms
+  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED off by making the voltage HIGH
+  delay(950);                      // wait 950 ms
 }
+
